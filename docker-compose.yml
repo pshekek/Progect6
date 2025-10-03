@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:latest
+    container_name: redisPr6
+    ports:
+      - "6380:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - redis-network
+
+
+  db:
+    image: postgres:latest
+    container_name: project6
+    restart: always
+    environment:
+      POSTGRES_DB: Project6
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
+  redis-data:
+
+networks:
+  redis-network:
